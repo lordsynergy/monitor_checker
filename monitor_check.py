@@ -20,51 +20,54 @@ RED_THRESHOLD = 200
 # Пороговое значение количества красных пикселей
 THRESHOLD_VALUE = 100000
 
-while True:
-    # Захват изображения
-    image = ImageGrab.grab()
+try:
+    while True:
+        # Захват изображения
+        image = ImageGrab.grab()
 
-    # Получение размеров экрана
-    width, height = image.size
+        # Получение размеров экрана
+        width, height = image.size
 
-    # Получение количества пикселей красного цвета на экране
-    red_pixels = 0
-    for x in range(width):
-        for y in range(height):
-            r, g, b = image.getpixel((x, y))
-            if r > RED_THRESHOLD and g < RED_THRESHOLD and b < RED_THRESHOLD:
-                red_pixels += 1
+        # Получение количества пикселей красного цвета на экране
+        red_pixels = 0
+        for x in range(width):
+            for y in range(height):
+                r, g, b = image.getpixel((x, y))
+                if r > RED_THRESHOLD and g < RED_THRESHOLD and b < RED_THRESHOLD:
+                    red_pixels += 1
 
-    # Проверка, достигнуто ли пороговое значение
-    if red_pixels > THRESHOLD_VALUE:
-        # Изменение размера изображения
-        resized_image = image.resize((800, 600))  # Укажите требуемые размеры изображения
+        # Проверка, достигнуто ли пороговое значение
+        if red_pixels > THRESHOLD_VALUE:
+            # Изменение размера изображения
+            resized_image = image.resize((800, 600))  # Укажите требуемые размеры изображения
 
-        # Сохранение изображения в формате JPEG с заданным качеством сжатия (0-100)
-        resized_image.save('screenshot.jpg', 'JPEG', quality=80)  # Укажите требуемое качество сжатия
+            # Сохранение изображения в формате JPEG с заданным качеством сжатия (0-100)
+            resized_image.save('screenshot.jpg', 'JPEG', quality=80)  # Укажите требуемое качество сжатия
 
-        # Создание объекта MIMEMultipart и добавление текстового сообщения
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = 'Событие в программе'
-        text = 'В программе обнаружено изменение поведения'
-        msg.attach(MIMEText(text, 'plain'))
+            # Создание объекта MIMEMultipart и добавление текстового сообщения
+            msg = MIMEMultipart()
+            msg['From'] = sender_email
+            msg['To'] = recipient_email
+            msg['Subject'] = 'Событие в программе'
+            text = 'В программе обнаружено изменение поведения'
+            msg.attach(MIMEText(text, 'plain'))
 
-        # Чтение сохраненного изображения и добавление вложения
-        with open('screenshot.jpg', 'rb') as f:
-            image_data = f.read()
-        image_mime = MIMEImage(image_data)
-        image_mime.add_header('Content-Disposition', 'attachment', filename='screenshot.jpg')
-        msg.attach(image_mime)
+            # Чтение сохраненного изображения и добавление вложения
+            with open('screenshot.jpg', 'rb') as f:
+                image_data = f.read()
+            image_mime = MIMEImage(image_data)
+            image_mime.add_header('Content-Disposition', 'attachment', filename='screenshot.jpg')
+            msg.attach(image_mime)
 
-        # Отправка письма
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(sender_email, password)
-            server.send_message(msg)
+            # Отправка письма
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(sender_email, password)
+                server.send_message(msg)
 
-        print('Письмо успешно отправлено.')
+            print('Письмо успешно отправлено.')
 
-    # Задержка перед следующей проверкой
-    time.sleep(1)
+        time.sleep(1)  # Задержка в 1 секунду перед повторной проверкой
+
+except KeyboardInterrupt:
+    print('Программа остановлена.')
