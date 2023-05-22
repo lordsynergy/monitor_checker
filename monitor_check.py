@@ -1,5 +1,6 @@
 # -*- coding: cp1251 -*-
 
+import time
 import smtplib
 import pyscreenshot as ImageGrab
 from PIL import Image
@@ -64,4 +65,6 @@ while True:
             server.send_message(msg)
 
         print('Письмо успешно отправлено.')
-        break
+
+    # Задержка перед следующей проверкой
+    time.sleep(1)
