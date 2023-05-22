@@ -35,6 +35,12 @@ while True:
 
     # Проверка, достигнуто ли пороговое значение
     if red_pixels > THRESHOLD_VALUE:
+        # Изменение размера изображения
+        resized_image = image.resize((800, 600))  # Укажите требуемые размеры изображения
+
+        # Сохранение изображения в формате JPEG с заданным качеством сжатия (0-100)
+        resized_image.save('screenshot.jpg', 'JPEG', quality=80)  # Укажите требуемое качество сжатия
+
         # Создание объекта MIMEMultipart и добавление текстового сообщения
         msg = MIMEMultipart()
         msg['From'] = sender_email
@@ -43,10 +49,11 @@ while True:
         text = 'В программе обнаружено изменение поведения'
         msg.attach(MIMEText(text, 'plain'))
 
-        # Преобразование изображения в байты и добавление вложения
-        image_bytes = image.tobytes()
-        image_mime = MIMEImage(image_bytes, _subtype='png')
-        image_mime.add_header('Content-Disposition', 'attachment', filename='screenshot.png')
+        # Чтение сохраненного изображения и добавление вложения
+        with open('screenshot.jpg', 'rb') as f:
+            image_data = f.read()
+        image_mime = MIMEImage(image_data)
+        image_mime.add_header('Content-Disposition', 'attachment', filename='screenshot.jpg')
         msg.attach(image_mime)
 
         # Отправка письма
