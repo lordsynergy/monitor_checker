@@ -1,5 +1,22 @@
 # -*- coding: cp1251 -*-
 
+import subprocess
+
+# Список зависимостей, которые требуется установить
+dependencies = ['pyscreenshot', 'Pillow']
+
+# Проверка наличия зависимостей и их установка при необходимости
+for dependency in dependencies:
+    try:
+        subprocess.check_output(['pip', 'show', dependency])
+    except subprocess.CalledProcessError:
+        print(f'Зависимость {dependency} отсутствует. Установка...')
+        try:
+            subprocess.check_call(['pip', 'install', dependency])
+            print(f'Зависимость {dependency} успешно установлена.')
+        except Exception as e:
+            print(f'Ошибка при установке зависимости {dependency}: {str(e)}')
+
 import time
 import smtplib
 import pyscreenshot as ImageGrab
@@ -8,17 +25,20 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 
-# Параметры для отправки почты
-smtp_server = 'smtp.mail.ru'
-smtp_port = 587
-sender_email = 'your_email@example.com'
-recipient_email = 'recipient_email@example.com'
-password = 'your_password'
+## Параметры для отправки почты
+ smtp_server = 'smtp.mail.ru'
+ smtp_port = 587
+ sender_email = 'your_email@example.com'
+ recipient_email = 'recipient_email@example.com'
+ password = 'your_password'
 
 # Порог количества красного цвета на экране (0-255)
 RED_THRESHOLD = 200
 # Пороговое значение количества красных пикселей
 THRESHOLD_VALUE = 100000
+
+print('Программа для отслеживания красного цвета на экране компьютера. Ожидание начала работы...')
+print('Программа успешно запущена. Отслеживание красного цвета на экране.')
 
 try:
     while True:
@@ -65,9 +85,9 @@ try:
                 server.login(sender_email, password)
                 server.send_message(msg)
 
-            print('Письмо успешно отправлено.')
+            print('Найдено изменение поведения. Снимок экрана сохранен и отправлен по электронной почте.')
 
         time.sleep(1)  # Задержка в 1 секунду перед повторной проверкой
 
 except KeyboardInterrupt:
-    print('Программа остановлена.')
+    print('Программа остановлена по запросу пользователя.')
